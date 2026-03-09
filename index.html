@@ -1,0 +1,474 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+<meta charset="UTF-8">
+<title>DDK Quiz</title>
+
+<style>
+body{
+  font-family: Arial, sans-serif;
+  background:#4991b7;
+  margin:0;
+  display:flex;
+  justify-content:center;
+}
+
+.container{
+  background:#d3f4f7;
+  margin:20px 0;
+  padding:30px 40px;
+  border-radius:10px;
+  box-shadow:0 10px 25px rgba(0,0,0,0.1);
+  width:520px;
+}
+
+h1{
+  text-align:center;
+  margin-bottom:25px;
+}
+
+.question{
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  margin-bottom:22px;
+  gap:8px;
+  text-align:center;
+}
+
+.topic{
+  font-weight:bold;
+  font-size:18px;
+}
+
+input{
+  padding:8px;
+  width:180px;
+  border:1px solid #ccc;
+  border-radius:6px;
+  font-size:16px;
+  text-align:center;
+}
+
+button{
+  padding:8px 14px;
+  border:none;
+  background:#146a97;
+  color:white;
+  border-radius:6px;
+  cursor:pointer;
+  font-size:16px;
+}
+
+button:hover{
+  background:#2e4b5a;
+}
+
+.result{
+  min-height:20px;
+  text-align:center;
+  padding:5px;
+  border-radius:4px;
+}
+
+.correct{
+  color:green;
+  font-weight:bold;
+  background:#d4edda;
+}
+
+.wrong{
+  color:red;
+  font-weight:bold;
+  background:#f8d7da;
+}
+
+.buttons{
+  display:flex;
+  gap:10px;
+  justify-content:center;
+}
+
+.tabs{
+  position:fixed;
+  top:0;
+  width:100%;
+  background:#146a97;
+  display:flex;
+  justify-content:center;
+  gap:10px;
+  padding:10px;
+  z-index:100;
+}
+
+.tabs button{
+  background:#146a97;
+  border:none;
+  padding:8px 16px;
+  border-radius:6px;
+  cursor:pointer;
+  font-weight:bold;
+}
+
+.tabs button:hover{
+  background:#2e4b5a;
+}
+
+.tabcontent{
+  margin-top:60px;
+}
+
+.tabs button.active{
+  background:#2e4b5a;
+  color:white;
+}
+
+@media (max-width: 600px){
+  .container { width:90%; padding:20px; }
+  input { width:100%; }
+}
+</style>
+
+</head>
+
+<body>
+
+<div class="tabs">
+  <button id="tab1" class="active" onclick="showTab('quiz1', this)">Övningar</button>
+  <button id="tab2" onclick="showTab('quiz2', this)">Farkas 6</button>
+  <button id="tab3" onclick="showTab('quiz3', this)">Farkas 7 (T1)</button>
+  <button id="tab4" onclick="showTab('quiz4', this)">Farkas 8 (T1+T2)</button>
+</div>
+
+<div id="quiz1" class="tabcontent">
+  <div class="container">
+    <h1>Övningar</h1>
+    <div id="quiz"></div>
+  </div>
+</div>
+
+<div id="quiz2" class="tabcontent" style="display:none;">
+  <div class="container">
+    <h1>Farkas 6</h1>
+    <div id="quizTwo"></div>
+  </div>
+</div>
+
+<div id="quiz3" class="tabcontent" style="display:none;">
+  <div class="container">
+    <h1>Farkas 7 (T1)</h1>
+    <div id="quizThree"></div>
+  </div>	
+</div>
+
+<div id="quiz4" class="tabcontent" style="display:none;">
+  <div class="container">
+    <h1>Farkas 8 (T1+T2)</h1>
+    <div id="quizFour"></div>
+  </div>	
+</div>
+
+<script>
+
+let questions = [
+
+{topic:"Ungdomspsykologi", answers:["155.5"]},
+{topic:"Ungdomar i arbetslivet", answers:["331.347"]},
+{topic:"Biblioteksbyggnader", answers:["022.3", "727.8"]},
+{topic:"The sculptures of Mesopotamia", answers:["732.5"]},
+{topic:"Forskningsstipendier", answers:["001.44"]},
+{topic:"Den lutherska kyrkan", answers:["284.1"]},
+{topic:"Statligt stöd till privatskolor", answers:["379.32", "371.02"]},
+{topic:"Skandinavien under vikingatiden", answers:["948.022"]},
+{topic:"Islamic influences in the Roman Catholic Church", answers:["282", "261.27", "297.283"]},
+{topic:"Bindning av biblioteksband", answers:["686.3032"]},
+{topic:"The springer spaniel: a complete guide", answers:["636.7524"]},
+{topic:"A comprehensive treatise of the Greylag Goose", answers:["598.4173"]},
+{topic:"Ungdomspsykologisk tidskrift", answers:["155.5"], explanation: "(-05 från T1)"},
+{topic:"Tidskrift för biblioteksvetenskap", answers:["020.5"], explanation: "(-05 från T1, en överflödig nolla faller bort)"},
+{topic:"Språkvetaren (tidskrift)", answers:["405", "410.5"]},
+{topic:"Ungdomar i arbetslivet: statistiska tabeller", answers:["331.347021"]},
+{topic:"Sociologer: en biografi", answers:["301.092"]},
+{topic:"Filosofiskt lexikon", answers:["103"]},
+{topic:"Tysk historia: tidskrift", answers:["943.005"], explanation: "(standardindelning Tyskland), 943.05 blir perioden 1700-1790)"},
+{topic:"Den lutherska kyrkan under 1900-talet", answers:["284.10904"], explanation: "(kronologisk facett från T1)"},
+{topic:"Women in the Paratroops", answers:["356.166082"], explanation: "(-082 från T1 enligt instruktion vid 356-359)"},
+{topic:"A history of international peacekeeping forces", answers:["355.357"], explanation: "(inget tillägg, ”omfattar/including” innebär ståplats och byggs då inte ut)"},
+{topic:"Sportfiske i strömmande vatten", answers:["799.1091693"], explanation: "(enligt instruktion vid -091 T1 samt -1693 från T2)"},
+{topic:"Statistisk årsbok för New Zeeland", answers:["319.305"], explanation: "(vid 314-319 ges instruktionen att bygga ut med T2. -05 från T1 för att få med seriell publikation)"},
+{topic:"Bullerstörningar i Bohuslän", answers:["363.740948673"], explanation: "(363.74  från huvudtabellen och geografisk utbyggnad med 09 som mellanled enligt instruktion under 362-363, samt – 48673 från T2 för Sverige)"},
+{topic:"Den irländska nationalbibliografin", answers:["015.417"], explanation: "(-417 från T2 enligt instruktion under 015)"},
+{topic:"Göteborgs universitetsbibliotek", answers:["027.74867345"],explanation: "(enligt instruktion vid 027.73-027.79.)"},
+{topic:"Dagspressjournalistiken på Åland", answers:["078.972"], explanation: "(enligt instruktion vid 078, att  till basnummer 078, foga  de nummer som följer T2—48 under notation T2--481-T2--489 från tabell 2“.)"},
+{topic:"Mexiko: resehandbok", answers:["917.204"], explanation: "(917 utbyggt med -2 från T2 enligt instruktion samt -04 enligt instruktion under 913-919)"},
+{topic:"Italiensk kyrkohistoria", answers:["274.5"], explanation: "(se 274-279 för instruktionen som ger -45 för Italien i T2)"},
+{topic:"Jamaicas offentliga finanser", answers:["336.7292"], explanation: "(vid 336.4-.9 i huvudtabellen ges instruktionen att lägga till direkt från T2 där vi hittar -7292 för Jamaica)"},
+{topic:"Produktionsekonomi på Nya Zeeland", answers:["338.0993"], explanation: "(338.09 ger instruktionen att vidareindela med hjälp av T2 vilket ger tillägg av -93 för New Zeeland)"},
+{topic:"De ekonomiska relationerna mellan Sverige och Storbritannien", answers:["337.410485"], explanation: "(vid 337.3-.9  ges instruktionen att vidareindela enligt T2 samt att lägga till 0 mellan de geografiska facetterna, i detta fall -485 för Sverige och -41 för Brittiska öarna)"},
+{topic:"Migration från Sverige till Canada", answers:["304.8710485"], explanation: "(till basnummer 304.8 läggs -71för Canada från T2, lägg till 0 samt -485 från T2 för Sverige, enligt instruktion/notes under 304.83-.89)"},
+{topic:"Svenskägda multinationella företag i Namibia", answers:["338.88948506881"], explanation: "(basnummer 338.889 vidareindelas enligt instruktion under 338.8893-.8899 genom att man från T2 tar numret för ägarnas nationalitet, -485, lägger till 0 och därefter lägger till det land företagen är belägna i, -6881 för Namibia)"}
+
+]
+
+
+
+// Quiz 2 frågor
+let questions2 = [
+  {topic:"The history of the Punic wars", type:"text", answers:["937.04"]},
+  {topic:"An introduction to photochemistry", type:"text", answers:["541.35"]},
+  {topic:"Big game hunting", type:"text", answers:["799.26"]},
+  {topic:"How valleys are formed", type:"text", answers:["551.442"]},
+  {topic:"The ouija board in spiritualism", type:"text", answers:["133.9325"]},
+  {topic:"The identification of waterbirds", type:"text", answers:["598.176"]},
+  {topic:"How to read maps", type:"text", answers:["912.014"]},
+  {topic:"The Lutheran Church in America", type:"text", answers:["284.133"]},
+  {topic:"New ideas in tax reform", type:"text", answers:["336.205"]},
+  {topic:"Unemployment resulting from technological change", type:"text", answers:["331.137042"]},
+  {topic:"Cycle racing", type:"text", answers:["796.62"]},
+  {topic:"Behaviour of people in disasters", type:"text", answers:["155.935"]},
+  {topic:"Electricity from the wind", type:"text", answers:["621.312136", "333.92"]},
+  {topic:"Cleaning clothes at home", type:"text", answers:["648.1"]},
+  {topic:"Sculpture in wax and wood", type:"text", answers:["731.2"]},
+  
+
+  {topic:"Ethiopia under Italian rule", type:"text", answers:["963.057"]},
+  {topic:"Drawing and preparing maps", type:"text", answers:["526"]},
+  {topic:"Social responsibility of executive management", type:"text", answers:["658.408"]},
+  {topic:"Talismans in witchcraft", type:"text", answers:["133.44"]},
+  {topic:"Rules of Parliament", type:"text", answers:["060.42", "328.1"]},
+  {topic:"Detergent technology", type:"text", answers:["668.14"]},
+  {topic:"Military intelligence", type:"text", answers:["355.3432"]},
+  {topic:"Ultrasonic vibrations", type:"text", answers:["534.55","620.28"]},
+  {topic:"Design of roadworks", type:"text", answers:["625.725","711.73"]},
+  {topic:"Sculpture in the twentieth century", type:"text", answers:["735.23"]},
+  {topic:"Plant diseases", type:"text", answers:["571.292","632.3"]},
+  {topic:"Speed drills for typing", type:"text", answers:["652.307"]},
+  {topic:"The ethics of government", type:"text", answers:["172.2"]},
+  {topic:"Music for the guitar", type:"text", answers:["787.87"]},
+  {topic:"Discipline in the classroom", type:"text", answers:["371.1024"]},
+  {topic:"Zodiac: an astrological guide", type:"text", answers:["133.52"]},
+  {topic:"Making trousers commercially", type:"text", answers:["687.116"]},
+  {topic:"Looking after hawks and falcons", type:"text", answers:["636.6869"]},
+  
+  {topic:"A general introduction to the violin, cello and other bowed string instruments", type:"text", answers:["787"]},
+  {topic:"Design and construction of clocks", type:"text", answers:["681.113"]},
+  {topic:"Cookery in restaurants", type:"text", answers:["641.572"]},
+  {topic:"How to code computer programs", type:"text", answers:["005.13"]},
+  {topic:"The use of radio in adult education", type:"text", answers:["374.26"]},
+  {topic:"Evolution of microbes", type:"text", answers:["579.138"]},
+  {topic:"Growing carrots in the home garden", type:"text", answers:["635.13"]},
+  {topic:"Techniques for indoor photography", type:"text", answers:["778.72"]},
+  {topic:"Eighteenth century sculpture", type:"text", answers:["735.21"]},
+  {topic:"Manufacture of paper", type:"text", answers:["676"]},
+  {topic:"Triplets, quads and more: an obstetric guide", type:"text", answers:["618.25"]},
+  {topic:"The Panama Canal: modern aid to transportation", type:"text", answers:["386.44"]},
+  {topic:"The physics of auroras", type:"text", answers:["538.768"]},
+  {topic:"Flying fishes and seahorses: odd marine creatures", type:"text", answers:["597.66"]},
+  {topic:"A guide to cooking with pressure cookers", type:"text", answers:["641.587"]}
+  ]
+  
+  let questions3 = [
+
+{topic:"Dictionary of child psychology", answers:["155.403"]},
+{topic:"Journal of manufacture of electronic toys", answers:["688.72805"]},
+{topic:"The language of soccer", answers:["796.334014"]},
+{topic:"Pony weekly magazine", answers:["636.1605"]},
+{topic:"Teaching netball", answers:["796.324071"]},
+{topic:"The philosophy of idealism", answers:["141"]},
+{topic:"The philosophy of social work", answers:["361.301"]},
+{topic:"Standards for lathes", answers:["621.9420218"]},
+{topic:"Dictionary of biochemistry", answers:["572.03"]},
+{topic:"A history of child care", answers:["649.109"]},
+{topic:"Systems of long-range weather forecasting", answers:["551.6365011"]},
+{topic:"Sales catalogue of wedding dresses", answers:["392.54029"]},
+{topic:"Guidebook for a toy museum", answers:["745.592074"]},
+{topic:"The terrier encyclopaedia", answers:["636.75503"]},
+{topic:"Genetics research", answers:["576.5072"]},
+{topic:"Handicrafts for people with disabilities", answers:["745.5087"]},
+
+{topic:"Dictionary of library and information science", answers:["020.3"]},
+{topic:"Philosophy of library science", answers:["020.1"]},
+{topic:"Library and information science: a journal", answers:["020.5"]},
+{topic:"Dictionary of psychology", answers:["150.3"]},
+{topic:"Psychology: historical research", answers:["150.722"]},
+{topic:"Dictionary of ethics", answers:["170.3"]},
+{topic:"Ethics: a quarterly journal", answers:["170.5"]},
+{topic:"International architecture organisations", answers:["720.601"]},
+{topic:"Dictionary of architecture", answers:["720.3"]},
+{topic:"Study and teaching of chemical technology", answers:["660.071"]},
+
+{topic:"Popular engineering (quarterly journal)", answers:["620.005"]},
+{topic:"Agricultural pest control monthly", answers:["632.905"]},
+{topic:"Apparatus used in puppetry", answers:["791.530284"]},
+{topic:"Correspondence courses in electronics", answers:["621.3810715"]},
+{topic:"Songs of the Middle Ages", answers:["782.420902"]},
+{topic:"Encyclopedia of horses", answers:["599.665 503", "636.100 3"]},
+{topic:"History of the social sciences", answers:["300.9"]},
+{topic:"Philosophy of Christianity", answers:["230.01"]},
+{topic:"Historical research into public administration", answers:["351.0722"]},
+{topic:"Lives of ten great artists", answers:["700.922"]},
+{topic:"Theory of the solar system", answers:["523.201"]},
+{topic:"Research in oceanography", answers:["551.46072"]},
+{topic:"Harness racing news (monthly journal)", answers:["798.4605"]},
+{topic:"Theory of personnel management", answers:["658.3001"]},
+{topic:"Book publishing trade catalogues", answers:["015"]},
+{topic:"Journal of the philosophy of socialism (Hint: use the table of preference)", answers:["335.001"], explanation: "(see Manual entry for choice of 335 over 320.53)"}
+]
+
+let questions4 = [
+  {topic:"The geography of Zimbabwe", answers:["916.891"]},
+  {topic:"A textbook of Papua New Guinea geography", answers:["919.53"]},
+  {topic:"The Amazon River: a geography", answers:["918.11"]},
+  {topic:"Geography of ancient Rhodes", answers:["913.916"]},
+  {topic:"A hotel guide to the French Riviera", answers:["914.49406"]},
+  {topic:"The travellers’ guide to Spain", answers:["914.604"]},
+  {topic:"Prehistoric geography of Carthage", answers:["913.973'01"]},
+  {topic:"An illustrated guide to the geography of ancient England", answers:["913.6200222", "913.6204"]},
+  {topic:"A gazetteer of Southern Africa", answers:["916.8003"]},
+  {topic:"Bahrain on $100 a day", answers:["915.36504"]},
+  
+  {topic:"Geology of Quebec", answers:["557.14"]},
+  {topic:"Printmaking in Japan", answers:["769.952"]},
+  {topic:"General statistics of Hungary", answers:["314.39"]},
+  {topic:"Political conditions in the Irish Republic", answers:["320.9417"]},
+  {topic:"Economic conditions in Algeria", answers:["330.965"]},
+  {topic:"Higher education in Vietnam", answers:["378.597"]},
+  {topic:"Libraries in New Zealand", answers:["027.093"]},
+  {topic:"The Roman Catholic Church in Paraguay", answers:["282.892"]},
+  {topic:"Constitutional law of ancient China", answers:["342.31"]},
+  {topic:"Life expectancy in Burundi", answers:["304.64567572"]},
+  
+  {topic:"Raising pigs", answers:["636.4"]},
+  {topic:"How to make soft toys", answers:["745.5924"]},
+  {topic:"Surfacing dirt roads", answers:["625.75"]},
+  {topic:"Mobility of labour", answers:["331.127"]},
+  {topic:"Problems providing food, clothing and shelter for those in need", answers:["361.05"]},
+  {topic:"he encyclopedia of household pets", answers:["636.088703"]},
+  {topic:"Teaching drawing", answers:["741.071"]},
+  {topic:"The theory of underwater photography", answers:["778.7301"]},
+  {topic:"The philosophy of evolution", answers:["576.801", "116"]},
+  {topic:"Correspondence course in mathematics", answers:["510.715"]},
+  {topic:"Radio in the 1930s", answers:["384.5409043"]},
+  {topic:"The sociology of slavery in the Roman Empire", answers:["306.3620937"]},
+  {topic:"Death customs in ancient Britain", answers:["393.09361"]},
+  {topic:"Theatre in Botswana", answers:["792.096883"]},
+  {topic:"Air pollution controls in Mexico", answers:["628.530972"]},
+  {topic:"Political parties in Peru", answers:["324.285"]},
+  {topic:"Alligators of the Florida Everglades", answers:["597.9830975939"]},
+  {topic:"Gold mining in the Kimberleys of Western Australia", answers:["622.3422099414"]},
+  {topic:"Firefighting in South Australia", answers:["628.925099423"]},
+  {topic:"Firefighting in the Flinders Ranges of South Australia", answers:["628.9250994237"]},
+  
+];
+
+
+
+
+// ---------- NORMALISERA SVAR ----------
+function normalize(v){
+  return v.replace(/\s/g,"").replace(",",".").trim()
+}
+
+// ---------- KONTROLLERA SVAR ----------
+function checkAnswer(prefix,index){
+  let questionList = quizzes[prefix]
+  let user = normalize(document.getElementById(prefix+"_input"+index).value)
+  let result = document.getElementById(prefix+"_result"+index)
+  let showBtn = document.getElementById(prefix+"_show"+index)
+  let correctAnswers = questionList[index].answers.map(normalize)
+
+  if(correctAnswers.includes(user)){
+    result.innerHTML="✓ Rätt!"
+    result.className="result correct"
+    showBtn.style.display="none"
+  }else{
+    result.innerHTML="✗ Fel"
+    result.className="result wrong"
+    showBtn.style.display="inline-block"
+  }
+}
+
+// ---------- VISA SVAR ----------
+function showAnswer(prefix,index){
+  let q = quizzes[prefix][index]
+  let result = document.getElementById(prefix+"_result"+index)
+  let correct = q.answers.join(" eller ")
+  let explanation = q.explanation ? " "+q.explanation : ""
+  result.innerHTML = `Rätt svar: ${correct}${explanation}`
+  result.className = "result"
+}
+
+// ---------- ENTER FUNKTION ----------
+function handleKey(prefix,event,index){
+  if(event.key==="Enter"){
+    checkAnswer(prefix,index)
+    let next=document.getElementById(prefix+"_input"+(index+1))
+    if(next){ next.focus() }
+  }
+}
+
+// ---------- FLIKAR ----------
+function showTab(tab,btn){
+  document.getElementById("quiz1").style.display="none"
+  document.getElementById("quiz2").style.display="none"
+  document.getElementById("quiz3").style.display="none"
+  document.getElementById("quiz4").style.display="none"
+  document.getElementById(tab).style.display="block"
+
+  let tabs=document.querySelectorAll(".tabs button")
+  tabs.forEach(t=>t.classList.remove("active"))
+  btn.classList.add("active")
+}
+
+// ---------- BYGG QUIZ ----------
+function createQuiz(questionList, containerId, prefix, breaks=[]){
+  let container = document.getElementById(containerId)
+  questionList.forEach((q,index)=>{
+    let div = document.createElement("div")
+    div.className="question"
+
+    div.innerHTML = `
+      <label class="topic" for="${prefix}_input${index}">${q.topic}</label>
+      <input 
+        id="${prefix}_input${index}" 
+        placeholder="Skriv nummer"
+        onkeypress="handleKey('${prefix}',event,${index})"
+      >
+      <div class="buttons">
+        <button onclick="checkAnswer('${prefix}',${index})">Kontrollera</button>
+        <button id="${prefix}_show${index}" onclick="showAnswer('${prefix}',${index})" style="display:none;">Visa rätt svar</button>
+      </div>
+      <div id="${prefix}_result${index}" class="result"></div>
+    `
+
+    container.appendChild(div)
+
+    if(breaks.includes(index)){
+      let hr=document.createElement("hr")
+      hr.style.margin="30px 0"
+      hr.style.border="2px solid #ccc"
+      container.appendChild(hr)
+    }
+  })
+}
+
+// ---------- DATA ----------
+let quizzes = {
+  quiz1: questions,
+  quiz2: questions2,
+  quiz3: questions3,
+  quiz4: questions4
+}
+
+// ---------- STARTA QUIZ ----------
+createQuiz(questions,"quiz","quiz1",[11,21,34])
+createQuiz(questions2,"quizTwo","quiz2",[14,32])
+createQuiz(questions3,"quizThree","quiz3",[15,25])
+createQuiz(questions4,"quizFour","quiz4", [10, 19])
+
+
+
+</script>
+
+</body>
+</html>
