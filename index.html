@@ -13,13 +13,14 @@ body{
   justify-content:center;
 }
 
-.container{
-  background:#d3f4f7;
-  margin:20px 0;
-  padding:30px 40px;
-  border-radius:10px;
-  box-shadow:0 10px 25px rgba(0,0,0,0.1);
-  width:520px;
+.container {
+  max-width: 520px;
+  width: 90%; /* tar 90% av skärmen på mobiler */
+  padding: 30px 20px; /* lite mindre padding på små skärmar */
+  margin: 20px auto;
+  background: #d3f4f7;
+  border-radius: 10px;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.1);
 }
 
 h1{
@@ -124,8 +125,41 @@ button:hover{
 }
 
 @media (max-width: 600px){
-  .container { width:90%; padding:20px; }
-  input { width:100%; }
+  input {
+    width: 100%;
+    font-size: 18px; /* större på små skärmar */
+    padding: 10px;
+  }
+  .topic {
+    font-size: 20px; /* större frågor på mobil */
+  }
+  button {
+    padding: 10px 16px;
+    font-size: 16px;
+  }
+}
+
+  @media (max-width: 600px){
+  .buttons {
+    flex-direction: column;
+    gap: 10px;
+  }
+}
+
+  @media (max-width: 600px){
+  .tabs {
+    flex-wrap: wrap;
+    padding: 8px;
+    gap: 5px;
+  }
+  .tabs button {
+    flex: 1 1 45%; /* knappar tar nästan halva bredden */
+    font-size: 14px;
+  }
+}
+
+  .question {
+  text-align: center;
 }
 </style>
 
