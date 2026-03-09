@@ -2,201 +2,178 @@
 <html lang="sv">
 <head>
 <meta charset="UTF-8">
-<title>DDK</title>
+<title>DDK Quiz</title>
 
 <style>
-body{
+/* ---------- GLOBAL STIL ---------- */
+body {
   font-family: Arial, sans-serif;
-  background:#4991b7;
-  margin:0;
-  display:flex;
-  justify-content:center;
+  background: #4991b7;
+  margin: 0;
+  display: flex;
+  justify-content: center;
+  min-height: 100vh;
 }
 
+/* ---------- CONTAINER ---------- */
 .container {
   max-width: 520px;
-  width: 90%; /* tar 90% av skärmen på mobiler */
-  padding: 30px 20px; /* lite mindre padding på små skärmar */
+  width: 95%;
+  padding: 25px 36px;
   margin: 20px auto;
   background: #d3f4f7;
   border-radius: 10px;
   box-shadow: 0 10px 25px rgba(0,0,0,0.1);
 }
 
-h1{
-  text-align:center;
-  margin-bottom:25px;
+/* ---------- RUBRIKER ---------- */
+h1 {
+  text-align: center;
+  margin-bottom: 25px;
+  font-size: 21px;
 }
 
-.question{
-  display:flex;
-  flex-direction:column;
-  align-items:center;
-  margin-bottom:22px;
-  gap:8px;
-  text-align:center;
+/* ---------- FRÅGOR ---------- */
+.question {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 20px;
+  gap: 8px;
+  text-align: center;
 }
 
-.topic{
-  font-weight:bold;
-  font-size:20px;
+/* Frågetext */
+.topic {
+  font-weight: bold;
+  font-size: 21px; /* något mindre än tidigare 24px */
 }
 
-input{
-  padding:8px;
-  width:180px;
-  border:1px solid #ccc;
-  border-radius:6px;
-  font-size:18px;
-  text-align:center;
+/* ---------- INPUT ---------- */
+input {
+  padding: 10px;
+  width: 180px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  font-size: 18px; /* lite mindre än tidigare */
+  text-align: center;
 }
 
-button{
-  padding:8px 14px;
-  border:none;
-  background:#146a97;
-  color:white;
-  border-radius:6px;
-  cursor:pointer;
-  font-size:16px;
+/* ---------- KNAPPAR ---------- */
+button {
+  padding: 10px 16px;
+  border: none;
+  background: #146a97;
+  color: white;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 16px; /* något mindre */
+  font-weight: bold;
 }
 
-button:hover{
-  background:#2e4b5a;
+button:hover {
+  background: #2e4b5a;
 }
 
-.result{
-  min-height:20px;
-  text-align:center;
-  padding:5px;
-  border-radius:4px;
+/* ---------- RESULTAT ---------- */
+.result {
+  min-height: 20px;
+  text-align: center;
+  padding: 5px;
+  border-radius: 4px;
 }
 
-.correct{
-  color:green;
-  font-weight:bold;
-  background:#d4edda;
+.correct {
+  color: green;
+  font-weight: bold;
+  background: #d4edda;
 }
 
-.wrong{
-  color:red;
-  font-weight:bold;
-  background:#f8d7da;
+.wrong {
+  color: red;
+  font-weight: bold;
+  background: #f8d7da;
 }
 
-.buttons{
-  display:flex;
-  gap:10px;
-  justify-content:center;
+/* ---------- KNAPPGRUPP ---------- */
+.buttons {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
 }
 
-.tabs{
-  position:fixed;
-  top:0;
-  width:100%;
-  background:#146a97;
-  display:flex;
-  justify-content:center;
-  gap:10px;
-  padding:10px;
-  z-index:100;
+/* ---------- TABS ---------- */
+.tabs {
+  position: fixed;
+  top: 0;
+  width: 100%;
+  background: #146a97;
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  padding: 10px;
+  z-index: 100;
+  flex-wrap: wrap;
 }
 
-.tabs button{
-  background:#146a97;
-  border:none;
-  padding:8px 16px;
-  border-radius:6px;
-  cursor:pointer;
-  font-weight:bold;
+.tabs button {
+  background: #146a97;
+  border: none;
+  padding: 8px 14px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: bold;
+  font-size: 15px;
 }
 
-.tabs button:hover{
-  background:#2e4b5a;
+.tabs button:hover {
+  background: #2e4b5a;
 }
 
-.tabcontent{
-  margin-top:60px;
+.tabs button.active {
+  background: #2e4b5a;
+  color: white;
 }
 
-.tabs button.active{
-  background:#2e4b5a;
-  color:white;
+.tabcontent {
+  margin-top: 70px;
 }
 
-@media (max-width: 600px){
+/* ---------- MEDIA QUERY FÖR MOBILER ---------- */
+@media (max-width: 600px) {
+  .container {
+    width: 95%;
+    padding: 20px;
+  }
+
+  h1 {
+    font-size: 22px;
+  }
+
+  .topic {
+    font-size: 20px; /* något mindre för mobil */
+  }
+
   input {
     width: 100%;
-    font-size: 18px; /* större på små skärmar */
+    font-size: 16px;
     padding: 10px;
   }
-  .topic {
-    font-size: 20px; /* större frågor på mobil */
-  }
-  button {
-    padding: 10px 16px;
-    font-size: 16px;
-  }
-}
 
-  @media (max-width: 600px){
+  button {
+    font-size: 16px;
+    padding: 10px 14px;
+  }
+
   .buttons {
     flex-direction: column;
     gap: 10px;
   }
-}
 
-  @media (max-width: 600px){
-  .tabs {
-    flex-wrap: wrap;
-    padding: 8px;
-    gap: 5px;
-  }
-  .tabs button {
-    flex: 1 1 45%; /* knappar tar nästan halva bredden */
-    font-size: 16px;
-  }
-}
-
-  .question {
-  text-align: center;
-}
-
-  @media (max-width: 600px){
-  /* Frågetext */
-  .topic {
-    font-size: 24px; /* större än tidigare 20px */
-  }
-
-  /* Input-fält */
-  input {
-    font-size: 20px; 
-    padding: 12px;
-  }
-
-  /* Knappar */
-  button {
-    font-size: 18px;
-    padding: 12px 18px;
-  }
-
-  /* Behåll flex-stapling för knappar */
-  .buttons {
-    flex-direction: column;
-    gap: 12px;
-  }
-
-  /* Container */
-  .container {
-    width: 95%;
-    padding: 25px;
-  }
-
-  /* Tabs på små skärmar */
   .tabs button {
     flex: 1 1 45%;
-    font-size: 16px;
-    padding: 10px;
+    font-size: 14px;
+    padding: 8px 12px;
   }
 }
 </style>
@@ -208,8 +185,8 @@ button:hover{
 <div class="tabs">
   <button id="tab1" class="active" onclick="showTab('quiz1', this)">Övningar</button>
   <button id="tab2" onclick="showTab('quiz2', this)">Farkas 6</button>
-  <button id="tab3" onclick="showTab('quiz3', this)">Farkas 7 (T1)</button>
-  <button id="tab4" onclick="showTab('quiz4', this)">Farkas 8 (T1+T2)</button>
+  <button id="tab3" onclick="showTab('quiz3', this)">Farkas 7</button>
+  <button id="tab4" onclick="showTab('quiz4', this)">Farkas 8</button>
 </div>
 
 <div id="quiz1" class="tabcontent">
@@ -228,14 +205,14 @@ button:hover{
 
 <div id="quiz3" class="tabcontent" style="display:none;">
   <div class="container">
-    <h1>Farkas 7 (T1)</h1>
+    <h1>Farkas 7</h1>
     <div id="quizThree"></div>
   </div>	
 </div>
 
 <div id="quiz4" class="tabcontent" style="display:none;">
   <div class="container">
-    <h1>Farkas 8 (T1+T2)</h1>
+    <h1>Farkas 8</h1>
     <div id="quizFour"></div>
   </div>	
 </div>
